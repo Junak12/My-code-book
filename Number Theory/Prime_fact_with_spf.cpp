@@ -7,28 +7,42 @@ using namespace std;
 #define ld long double
 #define ull unsigned long long
 
-int phi(int n) {
-    int result = n;  
-    
-    for (int i = 2; i * i <= n; i++) {
-        if (n % i == 0) {  // If i is a factor of n
-            // Reduce n as long as i divides n
-            while (n % i == 0) {
-                n /= i;
+vector<int> spf;
+
+
+// Function to preprocess smallest prime factors (SPF) up to 'maxN'
+void sieve(int maxN) {
+    spf.assign(maxN + 1, 0);
+    for (int i = 2; i <= maxN; i++) {
+        if (spf[i] == 0) {  // i is prime
+            for (int j = i; j <= maxN; j += i) {
+                if (spf[j] == 0) spf[j] = i;  // Assign i as the smallest prime factor for j
             }
-            result -= result / i;
         }
     }
-    if (n > 1) {
-        result -= result / n;
+}
+
+// Function to generate prime factors using SPF
+vector<int> getPrimeFactors(int n) {
+    vector<int> primeFactors;
+    while (n != 1) {
+        primeFactors.push_back(spf[n]);
+        n /= spf[n];
     }
-    
-    return result;
+    return primeFactors;
 }
 
 int main() {
     opt();
+
     int n = 32;
-    cout << "Euler's Totient function φ(" << n << ") = " << phi(n) << endl;
+    sieve(100);
+    vector<int> primeFactors = getPrimeFactors(n);
+    cout << "Prime factors of " << n << " are: ";
+    for (int factor : primeFactors) {
+        cout << factor << " ";
+    }
+    cout << endl;
+
     return 0;
 }
